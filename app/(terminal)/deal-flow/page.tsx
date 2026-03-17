@@ -41,9 +41,7 @@ export default function DealFlowPage() {
             </thead>
             <tbody>
               {PIPELINE_COMPANIES.map(co => (
-                <tr key={co.id} className="transition-colors" style={{ borderBottom: '1px solid var(--color-border)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-surface-2)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <tr key={co.id} className="hover-row" style={{ borderBottom: '1px solid var(--color-border)' }}>
                   <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--color-text-1)' }}>{co.name}</td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--color-text-2)' }}>{co.sector}</td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--color-text-2)' }}>{co.stage}</td>

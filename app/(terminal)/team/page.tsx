@@ -22,9 +22,7 @@ export default function TeamPage() {
             </thead>
             <tbody>
               {TEAM_MEMBERS.map(member => (
-                <tr key={member.id} style={{ borderBottom: '1px solid var(--color-border)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-surface-2)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                <tr key={member.id} className="hover-row" style={{ borderBottom: '1px solid var(--color-border)' }}>
                   <td className="px-4 py-3 font-mono text-sm" style={{ color: 'var(--color-text-1)' }}>{member.name}</td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--color-text-2)' }}>{member.title}</td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--color-text-3)' }}>{member.email}</td>

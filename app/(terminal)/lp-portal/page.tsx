@@ -40,10 +40,8 @@ export default async function LPPortalPage() {
             <div className="space-y-1">
               {LP_DOCUMENTS.map(doc => (
                 <div key={doc.id}
-                  className="flex items-center gap-3 py-2.5 px-2 rounded cursor-pointer transition-colors"
+                  className="hover-row flex items-center gap-3 py-2.5 px-2 rounded cursor-pointer"
                   style={{ borderBottom: '1px solid var(--color-border)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-surface-2)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <FileText size={14} style={{ color: 'var(--color-gold)', flexShrink: 0 }} />
                   <div className="flex-1 min-w-0">

@@ -5,7 +5,7 @@ import { ActivityFeed } from '@/components/ui/ActivityFeed';
 import { ProjectCard } from '@/components/ui/ProjectCard';
 import { ACTIVITY_FEED } from '@/lib/mock-data';
 
-const PROJECT_CARDS = [
+const ALL_PROJECT_CARDS = [
   {
     number: '01',
     title: 'Riceberg Intelligence',
@@ -13,22 +13,25 @@ const PROJECT_CARDS = [
     tags: ['AI Research', 'Market Intel'],
     href: 'https://riceberg-intelligence.vercel.app/',
     external: true,
+    internalOnly: false,
   },
   {
     number: '02',
     title: 'DeepTech Radar',
     description: 'Live deal flow tracker — scrapes 14 sources daily for early-stage signals.',
-    tags: ['Deal Flow', 'Gemini AI', 'Daily'],
+    tags: ['Deal Flow', 'Gemini AI', 'GP Only'],
     href: 'https://deeptech-radar.vercel.app/',
     external: true,
+    internalOnly: true,
   },
   {
     number: '03',
     title: 'PitchPerfect',
     description: 'AI pitch deck analysis and scoring for inbound deal evaluation.',
-    tags: ['Pitch Analysis', 'AI Scoring'],
+    tags: ['Pitch Analysis', 'AI Scoring', 'GP Only'],
     href: 'https://pitchperfect-eta.vercel.app/',
     external: true,
+    internalOnly: true,
   },
   {
     number: '04',
@@ -37,12 +40,16 @@ const PROJECT_CARDS = [
     tags: ['LP Access', 'Documents'],
     href: 'https://lp-dashboard-r21f.vercel.app/',
     external: true,
+    internalOnly: false,
   },
 ];
 
 export default async function DashboardPage() {
   const session = await auth();
   const firstName = session?.user?.name?.split(' ')[0] || 'there';
+  const role = (session?.user as { role?: string })?.role || 'lp';
+  const isGP = role === 'admin' || role === 'owner';
+  const PROJECT_CARDS = ALL_PROJECT_CARDS.filter(c => !c.internalOnly || isGP);
   const now = new Date();
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';

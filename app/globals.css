@@ -152,6 +152,14 @@ html, body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Hover row — used in server component tables instead of onMouseEnter/Leave */
+.hover-row {
+  transition: background 0.15s;
+}
+.hover-row:hover {
+  background: var(--color-surface-2) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
