@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { motion } from 'framer-motion';
@@ -46,16 +47,11 @@ export function Sidebar({ user }: SidebarProps) {
       style={{ background: 'var(--color-surface)', borderRight: '1px solid var(--color-border)' }}>
 
       {/* Logo */}
-      <div className="px-5 pt-6 pb-5">
-        <div className="flex items-center gap-2.5">
-          <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
-            <polygon points="11,0 14,6 17,5 20,12 16,11.5 14.5,14 11,9 7.5,14 6,11.5 2,12 5,5 8,6" fill="var(--color-gold)" />
-          </svg>
-          <div>
-            <span className="font-display text-base leading-none block" style={{ color: 'var(--color-text-1)' }}>RICEBERG</span>
-            <span className="font-mono text-[8px] tracking-[0.2em]" style={{ color: 'var(--color-text-3)' }}>TERMINAL</span>
-          </div>
-        </div>
+      <div className="px-5 pt-5 pb-4">
+        <Link href="/dashboard" className="flex items-center gap-3">
+          <Image src="/logo.png" alt="Riceberg" width={110} height={28} className="object-contain" style={{ filter: 'brightness(1.1)' }} />
+        </Link>
+        <span className="font-mono text-[9px] tracking-[0.2em] mt-1 block" style={{ color: 'var(--color-text-3)' }}>TERMINAL</span>
       </div>
 
       {/* Nav */}

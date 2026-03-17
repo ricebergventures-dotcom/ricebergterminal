@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -6,47 +6,56 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --color-bg:          #09090B;
-  --color-surface:     #111113;
-  --color-surface-2:   #18181B;
-  --color-surface-3:   #222226;
-  --color-border:      #27272A;
-  --color-border-2:    #3F3F46;
+  /* Backgrounds — pure black like riceberg.vc */
+  --color-bg:          #000000;
+  --color-surface:     #0A0A0A;
+  --color-surface-2:   #111111;
+  --color-surface-3:   #1A1A1A;
+  --color-border:      #1F1F1F;
+  --color-border-2:    #2E2E2E;
 
-  --color-gold:        #C8A85A;
-  --color-gold-muted:  #8A6F30;
-  --color-gold-dim:    #3A2E10;
+  /* Cyan accent — riceberg.vc primary (#61d1dc) */
+  --color-cyan:        #61d1dc;
+  --color-cyan-muted:  #3a9ba5;
+  --color-cyan-dim:    #0d2f33;
 
-  --color-ice:         #7DD3E8;
-  --color-ice-dim:     #1A3F4F;
+  /* Keep backward-compat aliases so existing components don't break */
+  --color-gold:        #61d1dc;
+  --color-gold-muted:  #3a9ba5;
+  --color-gold-dim:    #0d2f33;
+  --color-ice:         #b4e9e9;
+  --color-ice-dim:     #0d2f33;
 
-  --color-text-1:      #FAFAF9;
-  --color-text-2:      #A1A1AA;
-  --color-text-3:      #52525B;
+  /* Text */
+  --color-text-1:      #FFFFFF;
+  --color-text-2:      #A0A0A0;
+  --color-text-3:      #4A4A4A;
 
+  /* Status */
   --color-success:     #4ADE80;
   --color-warning:     #FBBF24;
   --color-danger:      #F87171;
 
-  --background: #09090B;
-  --foreground: #FAFAF9;
-  --card: #111113;
-  --card-foreground: #FAFAF9;
-  --popover: #111113;
-  --popover-foreground: #FAFAF9;
-  --primary: #C8A85A;
-  --primary-foreground: #09090B;
-  --secondary: #18181B;
-  --secondary-foreground: #FAFAF9;
-  --muted: #18181B;
-  --muted-foreground: #A1A1AA;
-  --accent: #18181B;
-  --accent-foreground: #FAFAF9;
+  /* shadcn tokens */
+  --background: #000000;
+  --foreground: #FFFFFF;
+  --card: #0A0A0A;
+  --card-foreground: #FFFFFF;
+  --popover: #0A0A0A;
+  --popover-foreground: #FFFFFF;
+  --primary: #61d1dc;
+  --primary-foreground: #000000;
+  --secondary: #111111;
+  --secondary-foreground: #FFFFFF;
+  --muted: #111111;
+  --muted-foreground: #A0A0A0;
+  --accent: #111111;
+  --accent-foreground: #FFFFFF;
   --destructive: #F87171;
-  --border: #27272A;
-  --input: #27272A;
-  --ring: #C8A85A;
-  --radius: 0.375rem;
+  --border: #1F1F1F;
+  --input: #1F1F1F;
+  --ring: #61d1dc;
+  --radius: 0.5rem;
 }
 
 @theme inline {
@@ -82,13 +91,14 @@
 html, body {
   background-color: var(--color-bg);
   color: var(--color-text-1);
-  font-family: 'DM Mono', monospace;
+  font-family: 'Manrope', sans-serif;
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
 }
 
 .font-display {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
 }
 
 .font-mono {
@@ -108,24 +118,24 @@ html, body {
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gold-muted);
+  background: var(--color-cyan-muted);
 }
 
-/* Gold hairline top of sidebar */
+/* Cyan hairline top of sidebar */
 .sidebar-hairline::before {
   content: '';
   display: block;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-muted), transparent);
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-cyan-muted), transparent);
   width: 100%;
   position: absolute;
   top: 0;
   left: 0;
 }
 
-/* Stat card gold hairline top */
+/* Stat card cyan hairline top */
 .stat-card-hairline {
-  border-top: 1px solid var(--color-gold);
+  border-top: 1px solid var(--color-cyan);
 }
 
 /* Blinking cursor */
