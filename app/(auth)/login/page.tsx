@@ -46,7 +46,7 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div>
-          <Image src="/logo.png" alt="Riceberg Ventures" width={160} height={40} className="object-contain" />
+          <Image src="/logo.png" alt="Riceberg Ventures" width={202} height={60} style={{ width: '160px', height: 'auto' }} priority />
         </div>
 
         {/* Bottom tagline */}
@@ -70,7 +70,7 @@ export default function LoginPage() {
         >
           {/* Mobile logo */}
           <div className="lg:hidden mb-10">
-            <Image src="/logo.png" alt="Riceberg Ventures" width={140} height={35} className="object-contain" />
+            <Image src="/logo.png" alt="Riceberg Ventures" width={202} height={60} style={{ width: '130px', height: 'auto' }} priority />
           </div>
 
           <h2 className="text-2xl font-semibold mb-1" style={{ color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}>
