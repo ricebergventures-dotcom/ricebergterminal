@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/client';
 import {
   LayoutDashboard, Briefcase, BarChart3, Users2, GitBranch,
   Table2, UserCog, Settings, LogOut, ChevronRight,
-  Brain, Radar, Mic, ExternalLink
+  Brain, Radar, Mic
 } from 'lucide-react';
 import { UserRole } from '@/lib/users';
 
@@ -25,11 +25,11 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={15} />, roles: ['admin', 'owner', 'lp'] },
 
-  // External project tools
-  { href: '/api/sso?target=https://riceberg-intelligence.vercel.app/', label: 'Intelligence', icon: <Brain size={15} />, roles: ['admin', 'owner', 'lp'], section: 'TOOLS', external: true, accent: '#61d1dc' },
-  { href: '/api/sso?target=https://lp-dashboard-r21f.vercel.app/', label: 'LP Dashboard', icon: <Users2 size={15} />, roles: ['admin', 'owner', 'lp'], external: true, accent: '#4ade80' },
-  { href: '/api/sso?target=https://deeptech-radar.vercel.app/', label: 'DeepTech Radar', icon: <Radar size={15} />, roles: ['admin', 'owner'], external: true, accent: '#a78bfa' },
-  { href: '/api/sso?target=https://pitchperfect-eta.vercel.app/', label: 'PitchPerfect', icon: <Mic size={15} />, roles: ['admin', 'owner'], external: true, accent: '#fb7185' },
+  // Embedded tools
+  { href: '/tools/intelligence', label: 'Intelligence', icon: <Brain size={15} />, roles: ['admin', 'owner', 'lp'], section: 'TOOLS', accent: '#61d1dc' },
+  { href: '/tools/lp-dashboard', label: 'LP Dashboard', icon: <Users2 size={15} />, roles: ['admin', 'owner', 'lp'], accent: '#4ade80' },
+  { href: '/tools/radar', label: 'DeepTech Radar', icon: <Radar size={15} />, roles: ['admin', 'owner'], accent: '#a78bfa' },
+  { href: '/tools/pitchperfect', label: 'PitchPerfect', icon: <Mic size={15} />, roles: ['admin', 'owner'], accent: '#fb7185' },
 
   // Internal pages
   { href: '/portfolio', label: 'Portfolio', icon: <Briefcase size={15} />, roles: ['admin', 'owner', 'lp'], section: 'FUND' },
@@ -99,11 +99,7 @@ export function Sidebar({ user }: SidebarProps) {
                     </span>
                   </div>
                 )}
-                <Link
-                  href={item.href}
-                  target={item.external ? '_blank' : undefined}
-                  rel={item.external ? 'noopener noreferrer' : undefined}
-                >
+                <Link href={item.href}>
                   <motion.div
                     className="flex items-center gap-2.5 px-2 py-2 rounded-md cursor-pointer relative"
                     style={{
@@ -118,10 +114,7 @@ export function Sidebar({ user }: SidebarProps) {
                       {item.icon}
                     </span>
                     <span className="text-xs flex-1" style={{ fontFamily: 'Manrope, sans-serif' }}>{item.label}</span>
-                    {item.external
-                      ? <ExternalLink size={10} style={{ color: 'var(--color-text-3)', opacity: 0.5 }} />
-                      : isActive && <ChevronRight size={12} style={{ color: 'var(--color-cyan)' }} />
-                    }
+                    {isActive && <ChevronRight size={12} style={{ color: 'var(--color-cyan)' }} />}
                   </motion.div>
                 </Link>
               </div>

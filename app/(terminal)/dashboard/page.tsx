@@ -11,7 +11,7 @@ const ALL_PROJECT_CARDS = [
     number: '01',
     title: 'Riceberg Intelligence',
     description: 'AI-powered research and market intelligence for deep tech investing.',
-    href: '/api/sso?target=https://riceberg-intelligence.vercel.app/',
+    href: '/tools/intelligence',
     icon: Brain,
     accentColor: '#61d1dc',
     internalOnly: false,
@@ -20,7 +20,7 @@ const ALL_PROJECT_CARDS = [
     number: '02',
     title: 'DeepTech Radar',
     description: 'Live deal flow tracker — scrapes 14 sources daily for early-stage signals.',
-    href: '/api/sso?target=https://deeptech-radar.vercel.app/',
+    href: '/tools/radar',
     icon: Radar,
     accentColor: '#a78bfa',
     internalOnly: true,
@@ -29,7 +29,7 @@ const ALL_PROJECT_CARDS = [
     number: '03',
     title: 'PitchPerfect',
     description: 'AI pitch deck analysis and scoring for inbound deal evaluation.',
-    href: '/api/sso?target=https://pitchperfect-eta.vercel.app/',
+    href: '/tools/pitchperfect',
     icon: Mic,
     accentColor: '#fb7185',
     internalOnly: true,
@@ -38,7 +38,7 @@ const ALL_PROJECT_CARDS = [
     number: '04',
     title: 'LP Dashboard',
     description: 'Limited partner portal for capital accounts, reports, and updates.',
-    href: '/api/sso?target=https://lp-dashboard-r21f.vercel.app/',
+    href: '/tools/lp-dashboard',
     icon: Users,
     accentColor: '#4ade80',
     internalOnly: false,
@@ -131,8 +131,6 @@ export default async function DashboardPage() {
               <Link
                 key={card.number}
                 href={card.href}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="group block p-5 rounded-xl transition-all duration-200"
                 style={{
                   background: 'var(--color-surface)',
