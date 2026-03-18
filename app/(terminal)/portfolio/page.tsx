@@ -1,11 +1,13 @@
-import { auth } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
+import { getRoleFromMetadata } from '@/lib/roles';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { PORTFOLIO_COMPANIES } from '@/lib/mock-data';
 import { PortfolioClient } from './PortfolioClient';
 
 export default async function PortfolioPage() {
-  const session = await auth();
-  const role = (session?.user as { role: string })?.role;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const role = getRoleFromMetadata(user);
 
   return (
     <RoleGate path="/portfolio">

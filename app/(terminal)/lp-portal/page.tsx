@@ -1,4 +1,5 @@
-import { auth } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
+import { getRoleFromMetadata } from '@/lib/roles';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { StatCard } from '@/components/ui/StatCard';
@@ -6,8 +7,9 @@ import { LP_ACCOUNTS, LP_DOCUMENTS, PORTFOLIO_COMPANIES } from '@/lib/mock-data'
 import { FileText, Download } from 'lucide-react';
 
 export default async function LPPortalPage() {
-  const session = await auth();
-  const role = (session?.user as { role: string })?.role;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const role = getRoleFromMetadata(user);
   const isGP = role === 'admin' || role === 'owner';
 
   return (

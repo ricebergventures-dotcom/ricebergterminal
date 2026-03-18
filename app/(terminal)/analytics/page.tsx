@@ -1,4 +1,5 @@
-import { auth } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
+import { getRoleFromMetadata } from '@/lib/roles';
 import { RoleGate } from '@/components/shell/RoleGate';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { StatCard } from '@/components/ui/StatCard';
@@ -7,8 +8,9 @@ import { TimelineChart } from '@/components/charts/TimelineChart';
 import { GEO_DISTRIBUTION } from '@/lib/mock-data';
 
 export default async function AnalyticsPage() {
-  const session = await auth();
-  const role = (session?.user as { role: string })?.role;
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const role = getRoleFromMetadata(user);
   const isGP = role === 'admin' || role === 'owner';
 
   return (

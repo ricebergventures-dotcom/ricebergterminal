@@ -2,9 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { createClient } from '@/lib/supabase/client';
 import {
   LayoutDashboard, Briefcase, BarChart3, Users2, GitBranch,
   Table2, UserCog, Settings, LogOut, ChevronRight,
@@ -26,10 +26,10 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={15} />, roles: ['admin', 'owner', 'lp'] },
 
   // External project tools
-  { href: 'https://riceberg-intelligence.vercel.app/', label: 'Intelligence', icon: <Brain size={15} />, roles: ['admin', 'owner', 'lp'], section: 'TOOLS', external: true, accent: '#61d1dc' },
-  { href: 'https://lp-dashboard-r21f.vercel.app/', label: 'LP Dashboard', icon: <Users2 size={15} />, roles: ['admin', 'owner', 'lp'], external: true, accent: '#4ade80' },
-  { href: 'https://deeptech-radar.vercel.app/', label: 'DeepTech Radar', icon: <Radar size={15} />, roles: ['admin', 'owner'], external: true, accent: '#a78bfa' },
-  { href: 'https://pitchperfect-eta.vercel.app/', label: 'PitchPerfect', icon: <Mic size={15} />, roles: ['admin', 'owner'], external: true, accent: '#fb7185' },
+  { href: '/api/sso?target=https://riceberg-intelligence.vercel.app/', label: 'Intelligence', icon: <Brain size={15} />, roles: ['admin', 'owner', 'lp'], section: 'TOOLS', external: true, accent: '#61d1dc' },
+  { href: '/api/sso?target=https://lp-dashboard-r21f.vercel.app/', label: 'LP Dashboard', icon: <Users2 size={15} />, roles: ['admin', 'owner', 'lp'], external: true, accent: '#4ade80' },
+  { href: '/api/sso?target=https://deeptech-radar.vercel.app/', label: 'DeepTech Radar', icon: <Radar size={15} />, roles: ['admin', 'owner'], external: true, accent: '#a78bfa' },
+  { href: '/api/sso?target=https://pitchperfect-eta.vercel.app/', label: 'PitchPerfect', icon: <Mic size={15} />, roles: ['admin', 'owner'], external: true, accent: '#fb7185' },
 
   // Internal pages
   { href: '/portfolio', label: 'Portfolio', icon: <Briefcase size={15} />, roles: ['admin', 'owner', 'lp'], section: 'FUND' },
@@ -46,7 +46,15 @@ interface SidebarProps {
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const role = user.role as UserRole;
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
 
   const visibleItems = NAV_ITEMS.filter(item => item.roles.includes(role));
   const initials = (user.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -143,7 +151,7 @@ export function Sidebar({ user }: SidebarProps) {
           }}>
             {role.toUpperCase()}
           </span>
-          <button onClick={() => signOut({ callbackUrl: '/login' })}
+          <button onClick={handleSignOut}
             className="flex items-center gap-1 text-[11px] transition-colors"
             style={{ color: 'var(--color-text-3)', fontFamily: 'Manrope, sans-serif' }}
             onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-danger)')}

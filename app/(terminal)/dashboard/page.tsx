@@ -1,4 +1,5 @@
-import { auth } from '@/lib/auth';
+import { createClient } from '@/lib/supabase/server';
+import { getRoleFromMetadata } from '@/lib/roles';
 import { StatCard } from '@/components/ui/StatCard';
 import { SectionLabel } from '@/components/ui/SectionLabel';
 import { ActivityFeed } from '@/components/ui/ActivityFeed';
@@ -11,7 +12,7 @@ const ALL_PROJECT_CARDS = [
     number: '01',
     title: 'Riceberg Intelligence',
     description: 'AI-powered research and market intelligence for deep tech investing.',
-    href: 'https://riceberg-intelligence.vercel.app/',
+    href: '/api/sso?target=https://riceberg-intelligence.vercel.app/',
     icon: Brain,
     accentColor: '#61d1dc',
     internalOnly: false,
@@ -20,7 +21,7 @@ const ALL_PROJECT_CARDS = [
     number: '02',
     title: 'DeepTech Radar',
     description: 'Live deal flow tracker — scrapes 14 sources daily for early-stage signals.',
-    href: 'https://deeptech-radar.vercel.app/',
+    href: '/api/sso?target=https://deeptech-radar.vercel.app/',
     icon: Radar,
     accentColor: '#a78bfa',
     internalOnly: true,
@@ -29,7 +30,7 @@ const ALL_PROJECT_CARDS = [
     number: '03',
     title: 'PitchPerfect',
     description: 'AI pitch deck analysis and scoring for inbound deal evaluation.',
-    href: 'https://pitchperfect-eta.vercel.app/',
+    href: '/api/sso?target=https://pitchperfect-eta.vercel.app/',
     icon: Mic,
     accentColor: '#fb7185',
     internalOnly: true,
@@ -38,7 +39,7 @@ const ALL_PROJECT_CARDS = [
     number: '04',
     title: 'LP Dashboard',
     description: 'Limited partner portal for capital accounts, reports, and updates.',
-    href: 'https://lp-dashboard-r21f.vercel.app/',
+    href: '/api/sso?target=https://lp-dashboard-r21f.vercel.app/',
     icon: Users,
     accentColor: '#4ade80',
     internalOnly: false,
@@ -46,9 +47,10 @@ const ALL_PROJECT_CARDS = [
 ];
 
 export default async function DashboardPage() {
-  const session = await auth();
-  const firstName = session?.user?.name?.split(' ')[0] || 'there';
-  const role = (session?.user as { role?: string })?.role || 'lp';
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const firstName = (user?.user_metadata?.name as string | undefined)?.split(' ')[0] || user?.email?.split('@')[0] || 'there';
+  const role = getRoleFromMetadata(user);
   const isGP = role === 'admin' || role === 'owner';
   const PROJECT_CARDS = ALL_PROJECT_CARDS.filter(c => !c.internalOnly || isGP);
 

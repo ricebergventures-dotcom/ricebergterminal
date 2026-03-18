@@ -1,26 +1,42 @@
-import { auth } from '@/lib/auth';
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
 
-export default auth((req) => {
-  const { nextUrl, auth: session } = req;
-  const isLoggedIn = !!session?.user;
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next({ request });
 
-  const isAuthPage = nextUrl.pathname.startsWith('/login');
-  const isApiAuth = nextUrl.pathname.startsWith('/api/auth');
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookies) =>
+          cookies.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
+          }),
+      },
+    },
+  );
 
-  if (isApiAuth) return NextResponse.next();
+  const { data: { session } } = await supabase.auth.getSession();
+  const { pathname } = request.nextUrl;
+  const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/auth');
+  const isApi = pathname.startsWith('/api/');
 
-  if (!isLoggedIn && !isAuthPage) {
-    return NextResponse.redirect(new URL('/login', nextUrl));
+  if (isApi) return response;
+
+  if (!session && !isAuthPage) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (isLoggedIn && isAuthPage) {
-    return NextResponse.redirect(new URL('/dashboard', nextUrl));
+  if (session && (pathname === '/login' || pathname === '/signup')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  return NextResponse.next();
-});
+  return response;
+}
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|logo.png).*)'],
 };
