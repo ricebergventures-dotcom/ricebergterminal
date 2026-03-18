@@ -27,7 +27,7 @@ export default function SignupPage() {
       password,
       options: {
         data: { name, role: 'lp' },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `https://riceberg-terminal.vercel.app/auth/callback`,
       },
     });
     if (authErr) {
