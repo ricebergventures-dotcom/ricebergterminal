@@ -28,6 +28,7 @@ export async function getPipelines() {
   return dhFetch('/pipelines') as Promise<Array<{
     id: string;
     name: string;
+    internal_id: string;
     allowed_prospect_types: string[];
   }>>;
 }
@@ -88,6 +89,71 @@ export interface Person {
 export async function getPeople(perPage = 100): Promise<Person[]> {
   const res = await dhFetch(`/people?per_page=${perPage}`);
   return res.data || [];
+}
+
+// ── Dashboard stats (real data only) ─────────────────────────────────────────
+export async function getDashboardStats() {
+  const [account, pipelines] = await Promise.all([
+    getAccount(),
+    getPipelines(),
+  ]);
+
+  const portfolioPipeline = pipelines.find(p => p.name === 'Portfolio');
+  const dealsPipeline = pipelines.find(p => p.name === 'Deals');
+  const lpPipeline = pipelines.find(p => p.internal_id === 'Limited Partners');
+
+  const [portfolioRes, dealsRes, lpRes] = await Promise.all([
+    portfolioPipeline ? dhFetch(`/pipeline_prospects?pipeline_id=${portfolioPipeline.id}&per_page=100`) : { data: [] },
+    dealsPipeline     ? dhFetch(`/pipeline_prospects?pipeline_id=${dealsPipeline.id}&per_page=100`)     : { data: [] },
+    lpPipeline        ? dhFetch(`/pipeline_prospects?pipeline_id=${lpPipeline.id}&per_page=100`)        : { data: [] },
+  ]);
+
+  return {
+    targetFundSize: account.fund_1_target_fund_size,
+    currency: account.currency,
+    portfolioCount: (portfolioRes.data || []).length,
+    dealsCount: (dealsRes.data || []).length,
+    lpCount: (lpRes.data || []).length,
+  };
+}
+
+// ── Recent activity (last updated prospects across all pipelines) ──────────────
+export interface ActivityItem {
+  id: number;
+  name: string;
+  pipeline_name: string;
+  stage_name: string | null;
+  updated_at: string;
+  created_at: string;
+}
+
+export async function getRecentActivity(limit = 8): Promise<ActivityItem[]> {
+  // Pull from Portfolio + Deals pipelines for recent activity
+  const pipelines = await getPipelines();
+  const relevantIds = pipelines
+    .filter(p => ['Portfolio', 'Deals'].includes(p.name))
+    .map(p => p.id);
+
+  const results = await Promise.all(
+    relevantIds.map(id => dhFetch(`/pipeline_prospects?pipeline_id=${id}&per_page=50`))
+  );
+
+  const pipelineMap = Object.fromEntries(pipelines.map(p => [p.id, p.name]));
+
+  const all: ActivityItem[] = results.flatMap((res, i) =>
+    (res.data || []).map((p: { id: number; name: string; stage: { name: string } | null; updated_at: string; created_at: string }) => ({
+      id: p.id,
+      name: p.name,
+      pipeline_name: pipelineMap[relevantIds[i]] || '',
+      stage_name: p.stage?.name || null,
+      updated_at: p.updated_at,
+      created_at: p.created_at,
+    }))
+  );
+
+  return all
+    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+    .slice(0, limit);
 }
 
 // ── Files ──────────────────────────────────────────────────────────────────────
