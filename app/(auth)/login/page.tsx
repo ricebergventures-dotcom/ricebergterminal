@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -13,6 +13,8 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
+  const [mode, setMode] = useState<'login' | 'forgot'>('login');
+  const [resetSent, setResetSent] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,6 +29,22 @@ export default function LoginPage() {
     } else {
       router.push('/dashboard');
       router.refresh();
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    const supabase = createClient();
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://riceberg-terminal.vercel.app/auth/reset-password',
+    });
+    setLoading(false);
+    if (resetErr) {
+      setError(resetErr.message);
+    } else {
+      setResetSent(true);
     }
   };
 
@@ -71,74 +89,119 @@ export default function LoginPage() {
             <img src="/logo.png" alt="Riceberg Ventures" style={{ width: '120px', height: 'auto' }} />
           </div>
 
-          <h2 className="text-2xl font-semibold mb-1" style={{ color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}>
-            Sign in
-          </h2>
-          <p className="text-sm mb-8" style={{ color: '#555', fontFamily: 'Manrope, sans-serif' }}>
-            Access the Riceberg Terminal.{' '}
-            <Link href="/signup" style={{ color: '#61d1dc' }}>Create account</Link>
-          </p>
+          {mode === 'login' ? (
+            <>
+              <h2 className="text-2xl font-semibold mb-1" style={{ color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}>
+                Sign in
+              </h2>
+              <p className="text-sm mb-8" style={{ color: '#555', fontFamily: 'Manrope, sans-serif' }}>
+                Access the Riceberg Terminal.{' '}
+                <Link href="/signup" style={{ color: '#61d1dc' }}>Create account</Link>
+              </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium mb-2" style={{ color: '#666', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.04em' }}>
-                EMAIL ADDRESS
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onFocus={() => setFocused('email')}
-                onBlur={() => setFocused(null)}
-                required
-                autoComplete="email"
-                placeholder="you@riceberg.vc"
-                className="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all"
-                style={{
-                  background: '#0d0d0d',
-                  border: `1px solid ${focused === 'email' ? '#61d1dc' : '#1e1e1e'}`,
-                  color: '#ffffff',
-                  fontFamily: 'Manrope, sans-serif',
-                }}
-              />
-            </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium mb-2" style={{ color: '#666', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.04em' }}>
+                    EMAIL ADDRESS
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    onFocus={() => setFocused('email')}
+                    onBlur={() => setFocused(null)}
+                    required
+                    autoComplete="email"
+                    placeholder="you@riceberg.vc"
+                    className="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all"
+                    style={{ background: '#0d0d0d', border: `1px solid ${focused === 'email' ? '#61d1dc' : '#1e1e1e'}`, color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium" style={{ color: '#666', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.04em' }}>
+                      PASSWORD
+                    </label>
+                    <button type="button" onClick={() => { setMode('forgot'); setError(''); }}
+                      className="text-xs transition-opacity hover:opacity-70"
+                      style={{ color: '#61d1dc', fontFamily: 'Manrope, sans-serif' }}>
+                      Forgot password?
+                    </button>
+                  </div>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    onFocus={() => setFocused('password')}
+                    onBlur={() => setFocused(null)}
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all"
+                    style={{ background: '#0d0d0d', border: `1px solid ${focused === 'password' ? '#61d1dc' : '#1e1e1e'}`, color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}
+                  />
+                </div>
+                {error && <p className="text-sm" style={{ color: '#F87171', fontFamily: 'Manrope, sans-serif' }}>{error}</p>}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 rounded-lg text-sm font-semibold transition-opacity flex items-center justify-center gap-2 mt-2"
+                  style={{ background: '#61d1dc', color: '#000000', fontFamily: 'Manrope, sans-serif', opacity: loading ? 0.7 : 1 }}
+                >
+                  {loading ? <Loader2 size={15} className="animate-spin" /> : (<>Continue <ArrowRight size={15} /></>)}
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <button onClick={() => { setMode('login'); setError(''); setResetSent(false); }}
+                className="flex items-center gap-1.5 text-xs mb-6 transition-opacity hover:opacity-70"
+                style={{ color: '#555', fontFamily: 'Manrope, sans-serif' }}>
+                <ArrowLeft size={12} /> Back to sign in
+              </button>
+              <h2 className="text-2xl font-semibold mb-1" style={{ color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}>
+                Reset password
+              </h2>
+              <p className="text-sm mb-8" style={{ color: '#555', fontFamily: 'Manrope, sans-serif' }}>
+                Enter your email and we'll send a reset link.
+              </p>
 
-            <div>
-              <label className="block text-xs font-medium mb-2" style={{ color: '#666', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.04em' }}>
-                PASSWORD
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onFocus={() => setFocused('password')}
-                onBlur={() => setFocused(null)}
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all"
-                style={{
-                  background: '#0d0d0d',
-                  border: `1px solid ${focused === 'password' ? '#61d1dc' : '#1e1e1e'}`,
-                  color: '#ffffff',
-                  fontFamily: 'Manrope, sans-serif',
-                }}
-              />
-            </div>
-
-            {error && (
-              <p className="text-sm" style={{ color: '#F87171', fontFamily: 'Manrope, sans-serif' }}>{error}</p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-lg text-sm font-semibold transition-opacity flex items-center justify-center gap-2 mt-2"
-              style={{ background: '#61d1dc', color: '#000000', fontFamily: 'Manrope, sans-serif', opacity: loading ? 0.7 : 1 }}
-            >
-              {loading ? <Loader2 size={15} className="animate-spin" /> : (<>Continue <ArrowRight size={15} /></>)}
-            </button>
-          </form>
+              {resetSent ? (
+                <div className="p-4 rounded-lg text-sm" style={{ background: '#0d2f33', border: '1px solid #61d1dc', color: '#61d1dc', fontFamily: 'Manrope, sans-serif' }}>
+                  Reset link sent — check your email.
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-medium mb-2" style={{ color: '#666', fontFamily: 'Manrope, sans-serif', letterSpacing: '0.04em' }}>
+                      EMAIL ADDRESS
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      onFocus={() => setFocused('email')}
+                      onBlur={() => setFocused(null)}
+                      required
+                      autoComplete="email"
+                      placeholder="you@riceberg.vc"
+                      className="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all"
+                      style={{ background: '#0d0d0d', border: `1px solid ${focused === 'email' ? '#61d1dc' : '#1e1e1e'}`, color: '#ffffff', fontFamily: 'Manrope, sans-serif' }}
+                    />
+                  </div>
+                  {error && <p className="text-sm" style={{ color: '#F87171', fontFamily: 'Manrope, sans-serif' }}>{error}</p>}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-3 rounded-lg text-sm font-semibold transition-opacity flex items-center justify-center gap-2"
+                    style={{ background: '#61d1dc', color: '#000000', fontFamily: 'Manrope, sans-serif', opacity: loading ? 0.7 : 1 }}
+                  >
+                    {loading ? <Loader2 size={15} className="animate-spin" /> : (<>Send reset link <ArrowRight size={15} /></>)}
+                  </button>
+                </form>
+              )}
+            </>
+          )}
         </motion.div>
       </div>
     </div>
