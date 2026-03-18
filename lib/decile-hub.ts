@@ -47,8 +47,11 @@ export interface Prospect {
   pipeline_id: string;
   type: string;
   created_at: string;
+  updated_at: string;
   short_description?: string;
   company_url?: string;
+  prospectable_id?: number;
+  stage?: { id: number; name: string };
   data?: Record<string, unknown>;
 }
 
@@ -72,8 +75,39 @@ export async function getDealFlowCompanies(): Promise<Prospect[]> {
 }
 
 // ── Organizations ──────────────────────────────────────────────────────────────
-export async function getOrganization(id: number) {
-  return dhFetch(`/organizations/${id}`);
+export interface OrgDetail {
+  id: number;
+  name: string;
+  company_url: string | null;
+  short_description: string | null;
+  founder: string | null;
+  people: Array<{ first_name: string; last_name: string; title?: string; email?: string }>;
+}
+
+export async function getOrganization(id: number): Promise<OrgDetail> {
+  const res = await dhFetch(`/organizations/${id}`);
+  return res.data;
+}
+
+export interface PortfolioCompany extends Prospect {
+  org?: OrgDetail;
+}
+
+export async function getPortfolioCompaniesWithDetails(): Promise<PortfolioCompany[]> {
+  const pipeline = await getPipelineByName('Portfolio');
+  if (!pipeline) return [];
+  const prospects = await getProspects(pipeline.id, 50);
+
+  // Fetch org details in parallel using prospectable_id from the prospect
+  const orgDetails = await Promise.all(
+    prospects.map(p =>
+      p.prospectable_id
+        ? getOrganization(p.prospectable_id).catch(() => undefined)
+        : Promise.resolve(undefined)
+    )
+  );
+
+  return prospects.map((p, i) => ({ ...p, org: orgDetails[i] }));
 }
 
 // ── People ─────────────────────────────────────────────────────────────────────

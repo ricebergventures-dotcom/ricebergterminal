@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { getRoleFromMetadata } from '@/lib/roles';
 import { RoleGate } from '@/components/shell/RoleGate';
-import { getPortfolioCompanies } from '@/lib/decile-hub';
+import { getPortfolioCompaniesWithDetails } from '@/lib/decile-hub';
 import { PortfolioClient } from './PortfolioClient';
 
 export default async function PortfolioPage() {
@@ -9,7 +9,7 @@ export default async function PortfolioPage() {
   const { data: { user } } = await supabase.auth.getUser();
   const role = getRoleFromMetadata(user);
 
-  const companies = await getPortfolioCompanies().catch(() => []);
+  const companies = await getPortfolioCompaniesWithDetails().catch(() => []);
 
   return (
     <RoleGate path="/portfolio">
